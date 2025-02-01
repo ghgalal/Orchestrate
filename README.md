@@ -41,8 +41,8 @@ export PATH="$(pwd)/cpd-cli-linux-EE-14.1.0-1189":$PATH
 cpd-cli manage restart-container
 ```
 
-Prepare your cpd_vars.sh
+Prepare your [cpd_vars.sh](https://github.com/ghgalal/Orchestrate/blob/main/cpd_vars.sh)
 ```
-vi [cpd_vars.sh](https://github.com/ghgalal/Orchestrate/blob/main/cpd_vars.sh)
+vi cpd_vars.sh
 ```
 
