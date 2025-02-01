@@ -25,7 +25,8 @@ setup cpd-cli
 ```
 #cpd-cli /home/itzuser/cpd-cli-linux-EE-14.1.0-1189:
 sudo su
-
+```
+```
 wget https://github.com/IBM/cpd-cli/releases/download/v14.1.0/cpd-cli-linux-EE-14.1.0.tgz
 tar -xzf cpd-cli-linux-EE-14.1.0.tgz
 ```
@@ -99,7 +100,7 @@ oc get pods -n cert-manager
 ## Prepare the Cluster
 ### Update the global pull image secret
 ```
-cpd-cli manage add-icr-cred-to-global-pull-secret \ --entitled_registry_key=${IBM_ENTITLEMENT_KEY}
+cpd-cli manage add-icr-cred-to-global-pull-secret --entitled_registry_key=${IBM_ENTITLEMENT_KEY}
 ```
 
 Wait until it is updated and set to True
@@ -186,7 +187,7 @@ oc get kubeletconfig
 
 ### Install the node feature discovery
 - Go to the operator hub from the console
-- search for node feature discovery and install the Redhat operator, not the community operator
+- search for Node Feature Discovery Operator and install the Redhat operator, not the community operator
 - Install the operator
 - Wait for it to become ready
 
