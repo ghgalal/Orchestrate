@@ -17,11 +17,11 @@
 # Cluster
 # ------------------------------------------------------------------------------
 
-export OCP_URL=https://api.679159d7e4b091eaa609cf5b.ocp.techzone.ibm.com:6443
+export OCP_URL=https://api.679d326900f27b33a46a02b5.ocp.techzone.ibm.com:6443
 export OPENSHIFT_TYPE="self-managed"
 export IMAGE_ARCH="amd64"
 export OCP_USERNAME=kubeadmin
-export OCP_PASSWORD=wcsGc-3wvnV-uHVLS-FQgog
+export OCP_PASSWORD=JGHne-Nxwgx-5nwfP-TVaET
 # export OCP_TOKEN=<enter your token>
 export SERVER_ARGUMENTS="--server=${OCP_URL}"
 export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
@@ -44,13 +44,13 @@ export OC_LOGIN="oc login ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
 # Projects
 # ------------------------------------------------------------------------------
 
-export PROJECT_CERT_MANAGER=ibm-cert-manager
-export PROJECT_LICENSE_SERVICE=cpd-licensing
-export PROJECT_SCHEDULING_SERVICE=cpd-scheduler
-export PROJECT_IBM_EVENTS=ibm-knative-events
+#export PROJECT_CERT_MANAGER=ibm-cert-manager
+export PROJECT_LICENSE_SERVICE=ibm-licensing
+export PROJECT_SCHEDULING_SERVICE=ibm-cpd-scheduler
+#export PROJECT_IBM_EVENTS=ibm-knative-events
 # export PROJECT_PRIVILEGED_MONITORING_SERVICE=<enter your privileged monitoring service project>
 export PROJECT_CPD_INST_OPERATORS=cpd-operators
-export PROJECT_CPD_INST_OPERANDS=cpd-operands
+export PROJECT_CPD_INST_OPERANDS=cpd
 # export PROJECT_CPD_INSTANCE_TETHERED=<enter your tethered project>
 # export PROJECT_CPD_INSTANCE_TETHERED_LIST=<a comma-separated list of tethered projects>
 
