@@ -497,7 +497,7 @@ cpd-cli manage setup-instance \
 
 - Check the status
 ```
-cpl-cli manage get-cr-status \ --cpd_instace_ns=${PROJECT_CPD_INST_OPERANDS}
+cpd-cli manage get-cr-status \ --cpd_instace_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 ### Instance Details
 - Get the sofware hub login details
