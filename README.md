@@ -13,7 +13,41 @@ Make sure you select ODF - 2TB as your storage
 ## Prepare your Bastion
 ssh into your bastion. Use the details provided in your provisioned environment
 ```
-ssh itzuser@<host> -p <port>
+ssh itzuser@api.679d326900f27b33a46a02b5.ocp.techzone.ibm.com -p 40222
+```
+
+Setup podman
+```
+sudo yum install -y podman
+```
+
+setup cpd-cli
+```
+#cpd-cli /home/itzuser/cpd-cli-linux-EE-14.1.0-1189:
+sudo su
+
+wget https://github.com/IBM/cpd-cli/releases/download/v14.1.0/cpd-cli-linux-EE-14.1.0.tgz
+tar -xzf cpd-cli-linux-EE-14.1.0.tgz
+```
+
+Get the path of cpd-cli
+```
+pwd
+```
+
+edit ~/.bashrc and add the path of cpd-cli
+- vi ~/.bachrc
+- insert the path the came out of pwd at the end of the file
+  export PATH=<cpd-cli-path>:$PATH
+- save and close using :wq
+- source ~/.bashrc
+
+If don't want to do that, you can export the path everytime you ssh to the bastion
+#export PATH="$(pwd)/cpd-cli-linux-EE-14.1.0-1189":$PATH
+
+Restart the olm-utils container
+```
+cpd-cli manage restart-container
 ```
 
 Setup oc
@@ -25,24 +59,12 @@ chmod +x oc
 sudo mv oc /usr/local/bin/oc
 ```
 
-Setup podman
-```
-sudo yum install -y podman
-```
-setup cpd-cli
-```
-#cpd-cli /home/itzuser/cpd-cli-linux-EE-14.1.0-1189:
-sudo bash
 
-wget https://github.com/IBM/cpd-cli/releases/download/v14.1.0/cpd-cli-linux-EE-14.1.0.tgz
-tar -xzf cpd-cli-linux-EE-14.1.0.tgz
-export PATH="$(pwd)/cpd-cli-linux-EE-14.1.0-1189":$PATH
 
-cpd-cli manage restart-container
-```
 
 Prepare your [cpd_vars.sh](https://github.com/ghgalal/Orchestrate/blob/main/cpd_vars.sh)
 ```
 vi cpd_vars.sh
 ```
+
 
