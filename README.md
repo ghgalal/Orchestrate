@@ -42,7 +42,7 @@ cpd-cli manage restart-container
 ```
 
 Prepare your cpd_vars.sh
-
-vi cpd_vars.sh
-
+```
+vi [cpd_vars.sh](https://github.com/ghgalal/Orchestrate/blob/main/cpd_vars.sh)
+```
 
