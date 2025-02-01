@@ -81,9 +81,9 @@ ${CPDM_OC_LOGIN}
 Follow the step to get it installed
 - go to openshift console
 - go to operator hub
-- find redhat certmanager
+- find cert-manager Operator for Red Hat OpenShift
 - get it installed
-- make sure you select version 1.13 because the latest version doesn't work with Orchestrate
+- make sure you select version 1.13 because the latest version doesn't work with Orchestrate and don't install in all namespaces
 
 Check if it is installed and working
 ```
