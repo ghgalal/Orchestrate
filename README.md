@@ -511,14 +511,14 @@ cpd-cli manage get-cpd-instance-details --cpd_instance_ns=${PROJECT_CPD_INST_OPE
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlment=cpd-enterprise \
+--entitlement=cpd-enterprise \
 --production=false
 ```
 
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlment=watsonx-orchestrate \
+--entitlement=watsonx-orchestrate \
 --production=false
 ```
 
