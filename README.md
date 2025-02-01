@@ -452,7 +452,7 @@ cpd-cli manage setup-mcg \
 - configure orchestrate
 ```
 cpd-cli manage setup-mcg \
---components=watson_orchestrate \
+--components=watsonx_orchestrate \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
 --noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
@@ -467,9 +467,9 @@ noobaa-uri-watson-assistant
 ```
 ```
 oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
-noobaa-account-watson-orchestrate \
-noobaa-cert-watson-orchestrate \
-noobaa-uri-watson-orchestrate
+noobaa-account-watsonx-orchestrate \
+noobaa-cert-watsonx-orchestrate \
+noobaa-uri-watsonx-orchestrate
 ```
 
 ### Apply permissions to the projects
