@@ -184,13 +184,13 @@ Make sure kubletconfig is now running
 oc get kubeletconfig
 ```
 
-## Install the node feature discovery
+### Install the node feature discovery
 - Go to the operator hub from the console
 - search for node feature discovery and install the Redhat operator, not the community operator
 - Install the operator
 - Wait for it to become ready
 
-## Install the NVIDIA GPU Operator
+### Install the NVIDIA GPU Operator
 Note that we don't need this as there are no GPUs in the Techzone environment, but we installed it anyway
 
 - Go to the operator hub from the console
@@ -198,7 +198,7 @@ Note that we don't need this as there are no GPUs in the Techzone environment, b
 - Install the operator
 - Wait for it to become ready
 
-## Install Redhat Openshift AI
+### Install Redhat Openshift AI
 ```
 ${OC_LOGIN}
 
@@ -297,18 +297,22 @@ spec:
 EOF
 ```
 
-- Confirm the pods are running 
+- Confirm that the data science cluster is ready
+```
+oc get datasciencecluster default-dsc -o jsonpath='"{.status.phase}"{"\n"}'
+```
+
+- Confirm the pods are running
 ```
 oc get pods -n redhat-ods-applications
 ```
 
-Edit the inferenceservice-config configuration map in the redhat-ods-applications project:
-
--Log in to the Red Hat OpenShift Container Platform web console as a cluster administrator.
--From the navigation menu, select Workloads > Configmaps.
--From the Project list, select redhat-ods-applications.
--Click the inferenceservice-config resource. Then, open the YAML tab.
--In the metadata.annotations section of the file, add opendatahub.io/managed: 'false':
+Edit the inferenceservice-config ConfigMap in the redhat-ods-applications project:
+- Log in to the Red Hat OpenShift Container Platform web console as a cluster administrator.
+- From the navigation menu, select Workloads > Configmaps.
+- From the Project list, select redhat-ods-applications.
+- Click the inferenceservice-config resource. Then, open the YAML tab.
+- In the metadata.annotations section of the file, add opendatahub.io/managed: 'false':
 ```
 metadata:
 annotations:
@@ -318,7 +322,7 @@ annotations:
   opendatahub.io/managed: 'false'
 ```
 
--Find the following entry in the file:
+- Find the following entry in the file:
 ```
 "domainTemplate": "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}",
 ```
@@ -328,3 +332,222 @@ and update the value of the domainTemplate field to "example.com":
 ```
 
 - Click Save.
+
+
+### Install the knative service
+Install the service
+```
+cpd-cli manage deploy-knative-eventing \
+--release=${VERSION} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--patch_redhat_crd=false
+```
+
+It will fail and we will need to manually get into the container and remove one line. After one of our colleagues consulted with the development team, the "kafka-broker-dispatcher" will always be waiting for another object to be ready, but the pods are brought up by a statefulset, so it will never complete. should be fixed in the next update for Orchestrate
+
+Folllow the steps below
+- find the olm-utils container id
+```
+podman ps
+```
+- get into the container
+```
+podman exec -it <container-id> /bin/bash
+```
+- go to "bin/deploy-knative-eventing" and remove the line "oc wait deployment -n knative-eventing kafka-broker-dispatcher --for condition=Available=True --timeout=60s"
+
+Check the knative-eventing is working now
+```
+oc get all -n knative-eventing
+```
+
+### Install Appconnect
+
+- Download the Case Files
+```
+curl -sSLO https://github.com/IBM/cloud-pak/raw/master/repo/case/ibm-appconnect/${AC_CASE_VERSION}/ibm-appconnect-${AC_CASE_VERSION}.tgz
+
+tar -xf ibm-appconnect-${AC_CASE_VERSION}.tgz
+```
+
+- create project
+```
+oc new-project ${PROJECT_IBM_APP_CONNECT}
+```
+
+```
+oc patch \
+--filename=ibm-appconnect/inventory/ibmAppconnect/files/op-olm/catalog_source.yaml \
+--type=merge \
+-o yaml \
+--patch="{\"metadata\":{\"namespace\":\"${PROJECT_IBM_APP_CONNECT}\"}}" \
+--dry-run=client \
+| oc apply -n ${PROJECT_IBM_APP_CONNECT} -f -
+```
+
+- Create operator group
+```
+cat <<EOF | oc apply -f -
+  apiVersion: operators.coreos.com/v1
+  kind: OperatorGroup
+  metadata:
+    name: appconnect-og
+    namespace: ${PROJECT_IBM_APP_CONNECT}
+  spec:
+    targetNamespaces:
+    - ${PROJECT_IBM_APP_CONNECT}
+    upgradeStrategy: Default
+EOF
+```
+
+- Create subscription
+```
+cat <<EOF | oc apply -f -
+  apiVersion: operators.coreos.com/v1alpha1
+  kind: Subscription
+  metadata:
+    name: ibm-appconnect-operator
+    namespace: ${PROJECT_IBM_APP_CONNECT}
+  spec:
+    channel: ${AC_CHANNEL_VERSION}
+    config:
+      env:
+      - name: ACECC_ENABLE_PUBLIC_API
+        value: "true"
+    installPlanApproval: Automatic
+    name: ibm-appconnect
+    source: appconnect-operator-catalogsource
+    sourceNamespace: ${PROJECT_IBM_APP_CONNECT}
+EOF
+```
+
+- Wait for operator to be ready
+```
+oc wait csv \
+--namespace=${PROJECT_IBM_APP_CONNECT} \
+--selector=operators.coreos.com/ibm-appconnect.${PROJECT_IBM_APP_CONNECT}='' \
+--for='jsonpath={.status.phase}'=Succeeded
+```
+
+### Multicloud Onject Gateway secrets config
+
+- Check noobaa-admin and noobaa-s3-servicing-cert secrets
+```
+oc get secrets --namespace=openshift-storage |grep nooba
+```
+```
+export NOOBAA_ACCOUNT_CREDENTIALS_SECRET=noobaa-admin
+export NOOBAA_ACCOUNT_CERTIFICATE_SECRET=noobaa-s3-serving-cert
+```
+- Configure assistant
+```
+cpd-cli manage setup-mcg \
+--components=watson_assistant \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
+--noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
+```
+
+- configure orchestrate
+```
+cpd-cli manage setup-mcg \
+--components=watson_orchestrate \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
+--noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
+```
+
+- Check if they are created
+```
+oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
+noobaa-account-watson-assistant \
+noobaa-cert-watson-assistant \
+noobaa-uri-watson-assistant
+```
+```
+oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
+noobaa-account-watson-orchestrate \
+noobaa-cert-watson-orchestrate \
+noobaa-uri-watson-orchestrate
+```
+
+### Apply permissions to the projects
+
+```
+cpd-cli manage authorize-instance-topology \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+## Install the platform
+### Installation of IBM Software Hub
+This step will take around an hour
+
+```
+cpd-cli manage setup-instance \
+--release=${VERSION} \
+--license_acceptance=true \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--run_storage_tests=false
+```
+
+- Check the status
+```
+cpl-cli manage get-cr-status \ --cpd_instace_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+### Instance Details
+- Get the sofware hub login details
+```
+cpd-cli manage get-cpd-instance-details --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --get_admin_initial_credentials=true
+```
+
+### Apply entitlements
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlment=cpd-enterprise \
+--production=false
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlment=watsonx-orchestrate \
+--production=false
+```
+
+### Install the components
+```
+cpd-cli manage apply-cr \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=${COMPONENTS_CR} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
+```
+
+### Install Appconnect
+```
+cpd-cli manage setup-appconnect \
+--appconnect_ns=${PROJECT_IBM_APP_CONNECT} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--release=${VERSION} \
+--components=watsonx_orchestrate \
+--file_storage_class=${STG_CLASS_FILE}
+```
+
+### Install Orchestrate
+- Apply OLM
+```
+cpd-cli manage apply-olm --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --components=watsonx_orchestrate
+```
+
+- Apply CR. This step takes around 90 minutes
+```
+cpd-cli manage apply-cr --components=watsonx_orchestrate --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true
+```
+
