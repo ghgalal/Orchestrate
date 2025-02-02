@@ -201,8 +201,6 @@ Note that we don't need this as there are no GPUs in the Techzone environment, b
 
 ### Install Redhat Openshift AI
 ```
-${OC_LOGIN}
-
 oc new-project redhat-ods-operator
 ```
 
@@ -336,15 +334,9 @@ and update the value of the domainTemplate field to "example.com":
 
 
 ### Install the knative service
-Install the service
-```
-cpd-cli manage deploy-knative-eventing \
---release=${VERSION} \
---block_storage_class=${STG_CLASS_BLOCK} \
---patch_redhat_crd=false
-```
 
-It will fail and we will need to manually get into the container and remove one line. After one of our colleagues consulted with the development team, the "kafka-broker-dispatcher" will always be waiting for another object to be ready, but the pods are brought up by a statefulset, so it will never complete. should be fixed in the next update for Orchestrate
+knative installation will fail and we will need to manually get into the container and remove one line. 
+After one of our colleagues consulted with the development team, the "kafka-broker-dispatcher" will always be waiting for another object to be ready, but the pods are brought up by a statefulset, so it will never complete. should be fixed in the next update for Orchestrate
 
 Folllow the steps below
 - find the olm-utils container id
@@ -355,7 +347,16 @@ podman ps
 ```
 podman exec -it <container-id> /bin/bash
 ```
-- go to "bin/deploy-knative-eventing" and remove the line "oc wait deployment -n knative-eventing kafka-broker-dispatcher --for condition=Available=True --timeout=60s"
+- go to "bin/deploy-knative-eventing" and remove the line "oc wait deployment -n knative-eventing kafka-broker-dispatcher --for condition=Available=True --timeout=60s". you can use the vi search capability by typing / and then type the search string and press enter, it should take you to the line that is supposed to be removed
+
+
+Install the service
+```
+cpd-cli manage deploy-knative-eventing \
+--release=${VERSION} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--patch_redhat_crd=false
+```
 
 Check the knative-eventing is working now
 ```
