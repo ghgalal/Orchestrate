@@ -1,4 +1,10 @@
 # Watson Orchestrate 5.1
+## Orchestrate Architecture
+![image](https://github.com/user-attachments/assets/4505cdd2-0f38-4e3c-a2fd-f9a29474b033)
+
+![image](https://github.com/user-attachments/assets/036ba2f9-b0f2-42c7-9f89-f60231fa7bf7)
+
+
 ## Techzone environment
 Reserve from techzone using this link
 
@@ -10,7 +16,12 @@ Make sure you select ODF - 2TB as your storage
 
 ![image](https://github.com/user-attachments/assets/0f14af27-cc45-4151-8087-4ad5741ef4a1)
 
+## Link to the CPD documentation in IBM Docs
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=getting-started
+
 ## Prepare your Bastion
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=installing-setting-up-client-workstation
+
 ssh into your bastion. Use the details provided in your provisioned environment
 ```
 ssh itzuser@api.679d326900f27b33a46a02b5.ocp.techzone.ibm.com -p 40222
@@ -79,6 +90,8 @@ ${OC_LOGIN}
 ${CPDM_OC_LOGIN}
 ```
 ## Install Redhat certmanager
+https://docs.openshift.com/container-platform/4.16/security/cert_manager_operator/cert-manager-operator-install.html
+
 Follow the step to get it installed
 - go to openshift console
 - go to operator hub
@@ -99,6 +112,8 @@ oc get pods -n cert-manager
 
 ## Prepare the Cluster
 ### Update the global pull image secret
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cluster-updating-global-image-pull-secret
+
 ```
 cpd-cli manage add-icr-cred-to-global-pull-secret --entitled_registry_key=${IBM_ENTITLEMENT_KEY}
 ```
@@ -108,6 +123,8 @@ Wait until it is updated and set to True
 oc get mcp
 ```
 ### Create the namespaces
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cluster-manually-creating-projects-namespaces-shared-components
+
 ```
 $OC_LOGIN}
 oc new-project ${PROJECT_LICENSE_SERVICE}
@@ -117,6 +134,8 @@ oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ### Install the shared cluster components
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cluster-installing-shared-components
+
 Installing Foundational Services, Licensing service and scheduling service
 
 - Licensing Service
@@ -136,6 +155,8 @@ cpd-cli manage apply-scheduler \
 ```
 
 ### Persistent storage
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cluster-configuring-persistent-storage
+
 Since we provisioned the cluster with ODF, we just need to confirm that the storage is configured
 ```
 oc get sc
@@ -146,6 +167,8 @@ oc get pvc -A
 ```
 
 ### Change the clsuter limits
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=settings-changing-process-ids-limit
+
 Confirm there is no kubeletconfig running
 ```
 oc get kubeletconfig
@@ -200,6 +223,8 @@ Note that we don't need this as there are no GPUs in the Techzone environment, b
 - Wait for it to become ready
 
 ### Install Redhat Openshift AI
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=software-installing-red-hat-openshift-ai
+
 ```
 oc new-project redhat-ods-operator
 ```
@@ -334,6 +359,7 @@ and update the value of the domainTemplate field to "example.com":
 
 
 ### Install the knative service
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=software-installing-red-hat-openshift-serverless-knative-eventing
 
 knative installation will fail and we will need to manually get into the container and remove one line. 
 After one of our colleagues consulted with the development team, the "kafka-broker-dispatcher" will always be waiting for another object to be ready, but the pods are brought up by a statefulset, so it will never complete. should be fixed in the next update for Orchestrate
@@ -364,6 +390,7 @@ oc get all -n knative-eventing
 ```
 
 ### Install Appconnect
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=software-installing-app-connect
 
 - Download the Case Files
 ```
@@ -432,6 +459,7 @@ oc wait csv \
 ```
 
 ### Multicloud Onject Gateway secrets config
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=piish-creating-secrets-services-that-use-multicloud-object-gateway
 
 - Check noobaa-admin and noobaa-s3-servicing-cert secrets
 ```
@@ -474,6 +502,7 @@ noobaa-uri-watsonx-orchestrate
 ```
 
 ### Apply permissions to the projects
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=arppn-applying-required-permissions-by-running-authorize-instance-topology-command
 
 ```
 cpd-cli manage authorize-instance-topology \
@@ -483,6 +512,8 @@ cpd-cli manage authorize-instance-topology \
 
 ## Install the platform
 ### Installation of IBM Software Hub
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=hub-installing-software
+
 This step will take around an hour
 
 ```
@@ -509,6 +540,8 @@ cpd-cli manage get-cpd-instance-details --cpd_instance_ns=${PROJECT_CPD_INST_OPE
 ```
 
 ### Apply entitlements
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=entitlements-applying-your-without-node-pinning
+
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -524,6 +557,8 @@ cpd-cli manage apply-entitlement \
 ```
 
 ### Install the components
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=center-installing-software-hub-control-software
+
 ```
 cpd-cli manage apply-cr \
 --release=${VERSION} \
@@ -535,6 +570,8 @@ cpd-cli manage apply-cr \
 ```
 
 ### Install Appconnect
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=software-installing-app-connect
+
 ```
 cpd-cli manage setup-appconnect \
 --appconnect_ns=${PROJECT_IBM_APP_CONNECT} \
@@ -545,6 +582,8 @@ cpd-cli manage setup-appconnect \
 ```
 
 ### Install Orchestrate
+https://www.ibm.com/docs/en/software-hub/5.1.x?topic=services-watsonx-orchestrate
+
 - Apply OLM
 ```
 cpd-cli manage apply-olm --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --components=watsonx_orchestrate
