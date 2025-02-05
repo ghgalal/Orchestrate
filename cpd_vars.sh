@@ -66,9 +66,10 @@ export STG_CLASS_FILE=ocs-storagecluster-cephfs
 # ------------------------------------------------------------------------------
 # IBM Entitled Registry
 # ------------------------------------------------------------------------------
+#
+# this entitlement key is not valid any more, you can get an entitlement key from https://myibm.ibm.com/products-services/containerlibrary
 
 export IBM_ENTITLEMENT_KEY=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJJQk0gTWFya2V0cGxhY2UiLCJpYXQiOjE3MzczOTYwMDAsImp0aSI6IjM0NTQ1ODI4NGU1MTQ4M2Q5NjE2MWI3YTdlYjcxMDAyIn0.UvA8K--UXFZ4u7_ha_IeSN-p1Op_EdyI5PJxvgrSJIY
-
 
 # ------------------------------------------------------------------------------
 # Private container registry
