@@ -1,9 +1,7 @@
 # Watson Orchestrate 5.1
-Prepared by: 
-
-Gihad Abdelhamid
-
-Zak Al Hashash
+**Prepared by:**
+- Gihad Abdelhamid
+- Zak Al Hashash
 
 
 ## Orchestrate Architecture
