@@ -286,7 +286,11 @@ spec:
 EOF
 ```
 
-- Confirm that the status of the following pods in the redhat-ods-applications project are Running: • kserve-controller-manager-* pod • kubeflow-training-operator-* pod • odh-model-controller-* pod
+Confirm that the status of the following pods in the redhat-ods-applications project are Running:
+- kserve-controller-manager-* pod
+- kubeflow-training-operator-* pod
+- odh-model-controller-* pod
+
 ```
 oc get dscinitialization
 ```
