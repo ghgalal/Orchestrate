@@ -287,13 +287,14 @@ EOF
 ```
 
 Confirm that the status of the following pods in the redhat-ods-applications project are Running:
+```
+oc get dscinitialization
+```
+
 - kserve-controller-manager-* pod
 - kubeflow-training-operator-* pod
 - odh-model-controller-* pod
 
-```
-oc get dscinitialization
-```
 
 ```
 cat <<EOF |oc apply -f -
