@@ -567,6 +567,8 @@ cpd-cli manage apply-entitlement \
 ```
 
 ### Install the components
+
+Update 12-Feb-2024: *This step is not required*
 https://www.ibm.com/docs/en/software-hub/5.1.x?topic=center-installing-software-hub-control-software
 
 ```
